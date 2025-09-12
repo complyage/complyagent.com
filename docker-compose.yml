@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+
+# ------------------------------------------------------------------------------
+# Agent :: OCR
+# ------------------------------------------------------------------------------
+
+  agent_ocr:
+    build:
+      context: ./agents/ocr
+      dockerfile: Dockerfile
+    container_name: agent_ocr
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./agents/ocr:/app
+    working_dir: /app
+    networks:
+      - complyagent_internal
+      - default  # Allow internet access
+
+# ------------------------------------------------------------------------------  
+# Agent :: Face  
+# ------------------------------------------------------------------------------  
+
+  agent_face:
+    build:
+      context: ./agents/face
+      dockerfile: Dockerfile
+    container_name: agent_face
+    ports:
+      - "50052:50052"
+    volumes:
+      - ./agents/face:/app
+    working_dir: /app
+    networks:
+      - complyagent_internal
+      - default  # Allow internet access
+
+# ------------------------------------------------------------------------------
+# Networks
+# ------------------------------------------------------------------------------
+
+networks:
+  complyagent_internal:
+    driver: bridge
+    internal: true  # No internet access
+  default:
+    driver: bridge  # Internet access

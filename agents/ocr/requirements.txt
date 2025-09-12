@@ -1,0 +1,7 @@
+protobuf
+Pillow
+opencv-python-headless
+paddleocr==3.2.0
+paddlepaddle==3.2.0
+flask
+gunicorn

@@ -1,0 +1,25 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go build
+bin/
+gen/
+models/paddleocr/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+#ENV
+config.json
+.env
+
+# Docker
+*.log
+*.pid

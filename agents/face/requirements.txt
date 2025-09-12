@@ -1,0 +1,4 @@
+flask
+insightface>=0.7.3
+numpy
+pillow
