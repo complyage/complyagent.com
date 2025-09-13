@@ -1,42 +1,55 @@
-package maestro
+package publish
+
+//||------------------------------------------------------------------------------------------------||
+//|| Import
+//||------------------------------------------------------------------------------------------------||
 
 import (
+	"encoding/json"
 	"fmt"
-	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/ralphferrara/aria/app"
 )
 
 //||------------------------------------------------------------------------------------------------||
-//|| Main
+//|| PublishAgentVerification
 //||------------------------------------------------------------------------------------------------||
 
-func main() {
+func PublishAgentVerification(agentRequest AgentVerification) error {
+
 	//||------------------------------------------------------------------------------------------------||
-	//|| Initialize Errors
+	//|| Create the JSON
 	//||------------------------------------------------------------------------------------------------||
-	initErr()
-	//||------------------------------------------------------------------------------------------------||
-	//|| Load Env
-	//||------------------------------------------------------------------------------------------------||
-	err := godotenv.Load(".env")
+
+	body, err := json.Marshal(agentRequest)
 	if err != nil {
-		fmt.Println("No .env file found, continuing...")
+		return err // optionally wrap with your error codes
 	}
+
 	//||------------------------------------------------------------------------------------------------||
-	//|| Check Agent Identifier
+	//|| Fetch Aria RabbitMQ Instance
 	//||------------------------------------------------------------------------------------------------||
-	if os.Getenv("AGENT_IDENTIFIER") == "" {
-		fmt.Println("AGENT_IDENTIFIER not set in environment")
-		os.Exit(1)
+
+	rabbit := app.QueueRabbit["agent"]
+	if rabbit == nil {
+		return fmt.Errorf("RabbitMQ instance 'agent' not found")
 	}
+
 	//||------------------------------------------------------------------------------------------------||
-	//|| Initialize App
+	//|| Get Channel
 	//||------------------------------------------------------------------------------------------------||
-	app.Init("../config.json")
+
+	var channelName string
+	switch agentRequest.Level {
+	case 1:
+		channelName = "AgentLevelOne"
+	case 2:
+		channelName = "AgentLevelTwo"
+	}
+
 	//||------------------------------------------------------------------------------------------------||
-	//|| Keep Running
+	//|| publish
 	//||------------------------------------------------------------------------------------------------||
-	select {}
+
+	return rabbit.Publish(channelName, body)
 }

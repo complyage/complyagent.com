@@ -38,13 +38,7 @@ agents/nsfw - Model
                   confidence  : 0.0 - 1.0
                   classes     : [] of string i.e. [EXPOSED_BREAST]
 
-agents/dob - Model : Trained phi3
-      extract()
-            request
-                  text        : string (OCR Data)
-            response
-                  found       : boolean
-                  dob         : string (DOB in YYYY-MM-DD format
+agents/ollama - Model : Trained phi3
       prompt()
             request
                   prompt      : string

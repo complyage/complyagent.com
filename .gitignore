@@ -9,7 +9,8 @@
 # Go build
 bin/
 gen/
-models/paddleocr/
+agents/nsfw/model/
+ollama/
 
 # IDE
 .vscode/

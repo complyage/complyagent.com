@@ -37,6 +37,36 @@ services:
     networks:
       - complyagent_internal
       - default  # Allow internet access
+      
+  # ------------------------------------------------------------------------------
+  # Agent :: NSFW
+  # ------------------------------------------------------------------------------
+  agent_nsfw:
+    build:
+      context: ./agents/nsfw
+      dockerfile: Dockerfile
+    container_name: agent_nsfw
+    ports:
+      - "50054:11434"
+    volumes:
+      - ./agents/nsfw:/app
+    working_dir: /app
+    networks:
+      - complyagent_internal
+      - default
+
+# ------------------------------------------------------------------------------
+# Ollama
+# ------------------------------------------------------------------------------
+  agent_ollama:
+    build:
+      context: ./agents/ollama
+      dockerfile: Dockerfile
+    container_name: agent_ollama
+    ports:
+      - "50053:11434"
+    volumes:
+      - ollama_models:/root/.ollama  # persists model cache
 
 # ------------------------------------------------------------------------------
 # Networks
@@ -48,3 +78,10 @@ networks:
     internal: true  # No internet access
   default:
     driver: bridge  # Internet access
+
+# ------------------------------------------------------------------------------  
+# Volumes
+# ------------------------------------------------------------------------------
+
+volumes:
+  ollama_models:

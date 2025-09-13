@@ -28,7 +28,7 @@ def detect_success(
 #|| Match was successful
 #||------------------------------------------------------------------------------------------------||
   
-def match_success(
+def compare_success(
       match: bool,
       confidence: Optional[float] = None,
 ):

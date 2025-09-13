@@ -6,7 +6,7 @@ from flask            import request
 from PIL              import Image
 import base64, io, numpy as np, traceback
 
-from response         import json_error, match_success
+from response         import json_error, compare_success
 
 #||------------------------------------------------------------------------------------------------||
 #|| Decode Image from Base64
@@ -41,7 +41,7 @@ def compare_route(face_app):
                   faces2 = face_app.get(img2)
 
                   if not faces1 or not faces2:
-                        return match_success(False)
+                        return compare_success(False)
 
                   emb1   = faces1[0].embedding
                   emb2   = faces2[0].embedding
@@ -49,7 +49,7 @@ def compare_route(face_app):
                   score  = np.dot(emb1, emb2) / (np.linalg.norm(emb1) * np.linalg.norm(emb2))
                   match  = score > 0.35
 
-                  return match_success(match, confidence=score)
+                  return compare_success(match, confidence=score)
 
             except Exception as e:
                   tb = traceback.format_exc()
