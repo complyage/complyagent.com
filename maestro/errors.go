@@ -1,4 +1,4 @@
-package maestro
+package main
 
 import "github.com/ralphferrara/aria/app"
 

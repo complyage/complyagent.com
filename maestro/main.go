@@ -1,4 +1,4 @@
-package maestro
+package main
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ func main() {
 	//||------------------------------------------------------------------------------------------------||
 	//|| Load Env
 	//||------------------------------------------------------------------------------------------------||
-	err := godotenv.Load(".env")
+	err := godotenv.Load("../.env")
 	if err != nil {
 		fmt.Println("No .env file found, continuing...")
 	}

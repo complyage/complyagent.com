@@ -1,5 +1,7 @@
 package calls
 
+import "os"
+
 type AgentStruct struct {
 	URL   string
 	Port  string
@@ -8,32 +10,32 @@ type AgentStruct struct {
 
 var (
 	AGENT_OCR = AgentStruct{
-		URL:   "http://localhost",
+		URL:   os.Getenv("AGENT_IP"),
 		Port:  "50051",
 		Route: "/ocr",
 	}
 	AGENT_FACE_DETECT = AgentStruct{
-		URL:   "http://localhost",
+		URL:   os.Getenv("AGENT_IP"),
 		Port:  "50052",
 		Route: "/detect",
 	}
 	AGENT_FACE_COMPARE = AgentStruct{
-		URL:   "http://localhost",
+		URL:   os.Getenv("AGENT_IP"),
 		Port:  "50052",
 		Route: "/compare",
 	}
 	AGENT_NSFW = AgentStruct{
-		URL:   "http://localhost",
+		URL:   os.Getenv("AGENT_IP"),
 		Port:  "50053",
 		Route: "/detect",
 	}
 	AGENT_PHI3 = AgentStruct{
-		URL:   "http://localhost",
+		URL:   os.Getenv("AGENT_IP"),
 		Port:  "50053",
 		Route: "/api/generate",
 	}
 	AGENT_DOB = AgentStruct{
-		URL:   "http://localhost",
+		URL:   os.Getenv("AGENT_IP"),
 		Port:  "50054",
 		Route: "/dob",
 	}
