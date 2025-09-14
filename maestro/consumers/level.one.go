@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/complyage/complyagent.com/processes"
+	"github.com/complyage/complyagent.com/maestro/processes"
 	"github.com/complyage/complyagent.com/publish"
 )
 
