@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"os"
 
-	"complyagent.com/calls"
-	"complyagent.com/publish"
 	"github.com/complyage/base/verify"
+	"github.com/complyage/complyagent.com/calls"
+	"github.com/complyage/complyagent.com/publish"
 
 	"github.com/ralphferrara/aria/app"
 )

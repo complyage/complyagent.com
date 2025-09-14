@@ -1,4 +1,4 @@
-module complyagent.com
+module github.com/complyage/complyagent.com
 
 go 1.24.5
 

@@ -9,8 +9,8 @@ import (
 	"errors"
 	"fmt"
 
-	"complyagent.com/processes"
-	"complyagent.com/publish"
+	"github.com/complyage/complyagent.com/processes"
+	"github.com/complyage/complyagent.com/publish"
 )
 
 //||------------------------------------------------------------------------------------------------||
