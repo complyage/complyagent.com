@@ -4,9 +4,9 @@
 
 from flask            import request
 from PIL              import Image
-import base64, io, numpy as np, traceback
+import base64, io, numpy as np, traceback, hashlib
 
-from response         import json_error, detect_success
+from response         import json_error, json_success
 
 #||------------------------------------------------------------------------------------------------||
 #|| Decode Image from Base64
@@ -21,31 +21,59 @@ def decode_image(b64):
             raise ValueError(f"Invalid image: {str(e)}")
 
 #||------------------------------------------------------------------------------------------------||
+#|| Generate Stable Facial ID (hash of embedding vector)
+#||------------------------------------------------------------------------------------------------||
+
+def embedding_to_id(embedding):
+      emb_string = ",".join(f"{v:.6f}" for v in embedding)
+      return hashlib.sha256(emb_string.encode()).hexdigest()
+
+#||------------------------------------------------------------------------------------------------||
 #|| Detect Route Handler
 #||------------------------------------------------------------------------------------------------||
 
 def detect_route(face_app):
       def detect_handler():
             try:
-                  data     = request.get_json()
-                  img_b64  = data.get("image")
+                  data    = request.get_json()
+                  img_b64 = data.get("image")
 
                   if not img_b64:
                         return json_error("Missing 'image' field")
 
-                  img     = decode_image(img_b64)
-                  faces   = face_app.get(img)
+                  img    = decode_image(img_b64)
+                  faces  = face_app.get(img)
 
                   if not faces:
-                        return json_error("No face detected", status=200)
+                        return json_error("No faces detected", status=200)
 
-                  face    = faces[0]
+                  face_data = []
+                  age_list  = []
 
-                  return detect_success(
-                        age       = int(face.age),
-                        gender    = "male" if face.gender == 1 else "female",
-                        confidence= float(face.det_score)
-                  )
+                  for face in faces:
+                        age        = int(face.age)
+                        gender     = "male" if face.gender == 1 else "female"
+                        confidence = float(face.det_score)
+                        embedding  = face.embedding.tolist()
+                        face_id    = embedding_to_id(embedding)
+
+                        age_list.append(age)
+                        face_data.append({
+                              "id"        : face_id,
+                              "age"       : age,
+                              "gender"    : gender,
+                              "confidence": confidence,
+                              "embedding" : embedding
+                        })
+
+                  data_out = {
+                        "count"   : len(face_data),
+                        "age_min" : min(age_list),
+                        "age_max" : max(age_list),
+                        "faces"   : face_data
+                  }
+
+                  return json_success(True, "Face(s) detected", data=data_out)
 
             except Exception as e:
                   tb = traceback.format_exc()
