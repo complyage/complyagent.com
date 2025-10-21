@@ -60,4 +60,4 @@ RUN python3 install_onnx.py
 # -----------------------------------------------------------------------------------------------
 ENV PYTHONPATH=/app
 
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:50052", "server:app"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:8080", "server:app"]

@@ -32,4 +32,4 @@ app.add_url_rule("/compare", view_func=compare_route(face_app), methods=["POST"]
 #||------------------------------------------------------------------------------------------------||
 
 if __name__ == "__main__":
-      app.run(host="0.0.0.0", port=50052)
+      app.run(host="0.0.0.0", port=8080)

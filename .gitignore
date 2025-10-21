@@ -10,7 +10,6 @@
 bin/
 gen/
 agents/nsfw/model/
-ollama/
 
 # IDE
 .vscode/

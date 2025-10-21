@@ -12,7 +12,7 @@ services:
       dockerfile: Dockerfile
     container_name: agent_ocr
     ports:
-      - "50051:50051"
+      - "50051:8080"
     volumes:
       - ./agents/ocr:/app
     working_dir: /app
@@ -30,7 +30,7 @@ services:
       dockerfile: Dockerfile
     container_name: agent_face
     ports:
-      - "50052:50052"
+      - "50052:8080"
     volumes:
       - ./agents/face:/app
     working_dir: /app
@@ -47,7 +47,7 @@ services:
       dockerfile: Dockerfile
     container_name: agent_nsfw
     ports:
-      - "50054:11434"
+      - "50054:8080"
     volumes:
       - ./agents/nsfw:/app
     working_dir: /app
