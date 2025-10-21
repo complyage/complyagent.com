@@ -33,31 +33,31 @@ def compare_success(
       confidence: Optional[float] = None,
 ):
       data = {
-            "match"       : match,
+            "match"     : match,
             "confidence": confidence
       }
 
       return json_success(True, "", data=data)  
 
 #||------------------------------------------------------------------------------------------------||
-#|| Base Error
+#|| Base Error (default 400, but overridable)
 #||------------------------------------------------------------------------------------------------||
 
-def json_error(message: str):
+def json_error(message: str, status: int = 400):
       response = {
             "success": False,
             "message": message,
             "data": {}
       }
 
-      return jsonify(response), 400
+      return jsonify(response), status
 
 #||------------------------------------------------------------------------------------------------||
 #|| Base JSON Response
 #||------------------------------------------------------------------------------------------------||
 
 def json_success(
-      success: True,
+      success: bool,
       message: Optional[str] = None,
       data: Optional[Any] = None,
 ):
@@ -68,9 +68,3 @@ def json_success(
       }
 
       return jsonify(response), 200
-
-#||------------------------------------------------------------------------------------------------||
-#|| Import
-#||------------------------------------------------------------------------------------------------||
-
-

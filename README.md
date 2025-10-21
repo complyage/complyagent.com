@@ -42,7 +42,7 @@ complyagents/
 ### Cloning
 ```bash
 git clone https://github.com/complyage/complyagent.com.git
-cd complyagents
+cd complyagent.com
 ```
 
 ---

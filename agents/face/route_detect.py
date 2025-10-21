@@ -37,7 +37,7 @@ def detect_route(face_app):
                   faces   = face_app.get(img)
 
                   if not faces:
-                        return json_error("No face detected")
+                        return json_error("No face detected", status=200)
 
                   face    = faces[0]
 
