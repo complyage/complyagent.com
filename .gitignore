@@ -6,6 +6,9 @@
 *.test
 *.out
 
+#CACHE
+__pycache__/
+
 # Go build
 bin/
 gen/
