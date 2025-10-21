@@ -1,16 +1,16 @@
 # ComplyAgents
 
 ComplyAgents is a collection of **self-contained AI/ML micro-agents** designed for compliance and verification tasks.  
-Each agent exposes a **gRPC API** and runs in its own Docker container. The system is orchestrated with `docker-compose`  
-and integrates with the [ComplyAge Go framework](https://github.com/ralphferrara/aria) for RabbitMQ task distribution.
+Each agent runs independently in its own Docker container and communicates exclusively through **RabbitMQ queues**.  
+The system integrates with the [ComplyAge Go framework](https://github.com/ralphferrara/aria) for distributed task orchestration.
 
 ---
 
 ## ✨ Goals
-- **Encapsulated services** — each agent has its own Dockerfile, dependencies, and gRPC server.
-- **Clear contracts** — all inter-service communication is defined in `.proto` files.
-- **gRPC first** — no HTTP endpoints, only strongly-typed gRPC calls.
-- **Docker-compose orchestration** — bring up all agents, RabbitMQ, and supporting services with a single command.
+- **Encapsulated services** — each agent includes its own Dockerfile, dependencies, and consumer logic.  
+- **Queue-based communication** — all coordination occurs via RabbitMQ exchanges and queues.  
+- **Lightweight** — no HTTP or gRPC interfaces; only internal queue-driven message flow.  
+- **Docker-compose orchestration** — bring up all agents, RabbitMQ, and supporting services with one command.  
 - **Extendable** — easily add new agents (OCR, DOB extraction, NSFW detection, Face compare, etc.).
 
 ---
@@ -18,18 +18,15 @@ and integrates with the [ComplyAge Go framework](https://github.com/ralphferrara
 ## 📂 Repo Structure
 ```
 complyagents/
-├── proto/          # .proto service definitions
-├── gen/            # generated Go code from protobufs
-├── maestro/        # Consumer for RabbitMQ
-├── agents/         # individual agent implementations
+├── maestro/        # RabbitMQ orchestrator / dispatcher
+├── agents/         # Individual agent implementations
 │   ├── ocr/
 │   ├── dob/
 │   ├── nsfw/
 │   └── face/
-├── docker/         # Dockerfiles and compose overrides
 ├── docker-compose.yml
-├── init.sh         # Linux based init script
-├── init.ps1        # Powershell init script
+├── init.sh         # Linux init script
+├── init.ps1        # PowerShell init script
 └── README.md
 ```
 
@@ -39,13 +36,8 @@ complyagents/
 
 ### Prerequisites
 - [Go 1.24+](https://go.dev/)
-- [Protocol Buffers compiler (`protoc`)](https://grpc.io/docs/protoc-installation/)
-- Plugins for Go codegen:
-  ```bash
-  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-  ```
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) with Compose v2
+- (Optional) RabbitMQ locally or via Docker
 
 ### Cloning
 ```bash
@@ -57,13 +49,8 @@ cd complyagents
 
 ## 🔧 Usage
 
-### Generate gRPC stubs
-```bash
-protoc -I proto --go_out=gen --go-grpc_out=gen proto/*.proto
-```
-
-### Run locally
-Each agent can be run directly:
+### Run an agent directly
+Each agent can be started manually:
 ```bash
 go run ./agents/ocr
 ```
@@ -73,14 +60,29 @@ go run ./agents/ocr
 docker compose up --build
 ```
 
+This starts all defined agents, RabbitMQ, and the `maestro` orchestrator.
+
 ---
 
 ## 🧩 Planned Agents
-- **OCR Agent** — text extraction from images
-- **DOB Agent** — date of birth recognition/validation
-- **NSFW Agent** — detect explicit/unsafe content
-- **Face Agent** — face compare + selfie liveness
-- (more to come…)
+- **OCR Agent** — text extraction from images  
+- **DOB Agent** — date of birth recognition/validation  
+- **NSFW Agent** — detect explicit/unsafe content  
+- **Face Agent** — face comparison and selfie liveness  
+- *(more to come…)*
+
+---
+
+## 🧠 Communication Model
+- **RabbitMQ** handles all task distribution and message passing.  
+- Each agent listens on its dedicated queue (e.g., `ocr.jobs`, `dob.jobs`, etc.).  
+- Results are published back to response queues (e.g., `ocr.results`).  
+- Messages are JSON objects defining task metadata, input paths, and output payloads.  
+
+Example task flow:
+1. The `maestro` service publishes a message to `dob.jobs`.
+2. The DOB agent processes the job and publishes the result to `dob.results`.
+3. Other services consume the result for downstream validation or reporting.
 
 ---
 
