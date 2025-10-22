@@ -2,9 +2,12 @@ version: "3.9"
 
 services:
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Agent :: OCR
 # ------------------------------------------------------------------------------
+# Performs optical character recognition on images (PaddleOCR)
+# GPU acceleration is enabled for massive throughput improvements.
+# ==============================================================================
 
   agent_ocr:
     build:
@@ -19,10 +22,21 @@ services:
     networks:
       - complyagent_internal
       - default  # Allow internet access
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all         # Enable GPU access
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]          # Reserve GPU for this container
+    runtime: nvidia                        # Use NVIDIA container runtime
 
-# ------------------------------------------------------------------------------  
-# Agent :: Face  
-# ------------------------------------------------------------------------------  
+# ==============================================================================
+# Agent :: Face
+# ------------------------------------------------------------------------------
+# Handles face detection, age, and gender prediction using ONNX / InsightFace.
+# GPU acceleration significantly speeds up inference time.
+# ==============================================================================
 
   agent_face:
     build:
@@ -37,10 +51,21 @@ services:
     networks:
       - complyagent_internal
       - default  # Allow internet access
-      
-  # ------------------------------------------------------------------------------
-  # Agent :: NSFW
-  # ------------------------------------------------------------------------------
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
+
+# ==============================================================================
+# Agent :: NSFW
+# ------------------------------------------------------------------------------
+# Classifies explicit or inappropriate content using transformer-based models.
+# GPU acceleration improves batch processing performance dramatically.
+# ==============================================================================
 
   agent_nsfw:
     build:
@@ -55,10 +80,21 @@ services:
     networks:
       - complyagent_internal
       - default
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
 
+# ==============================================================================
+# Agent :: Ollama
 # ------------------------------------------------------------------------------
-# Ollama
-# ------------------------------------------------------------------------------
+# Hosts the Ollama LLM server (Phi-3, LLaMA, etc.).
+# Required for generating SEO-friendly descriptions and text responses.
+# ==============================================================================
 
   agent_ollama:
     build:
@@ -68,11 +104,23 @@ services:
     ports:
       - "50053:11434"
     volumes:
-      - ollama_models:/root/.ollama  # persists model cache
+      - ollama_models:/root/.ollama         # Persist model cache
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all          # Allow full GPU visibility
+      - OLLAMA_USE_GPU=true                 # Force Ollama to use GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]           # Reserve GPU for LLM inference
+    runtime: nvidia
 
+# ==============================================================================
+# Agent :: Caption
 # ------------------------------------------------------------------------------
-# Caption Agent
-# ------------------------------------------------------------------------------
+# Generates short descriptive captions (possibly using Ollama internally).
+# GPU support allows faster text or vision model inference.
+# ==============================================================================
 
   agent_caption:
     build:
@@ -87,10 +135,21 @@ services:
     networks:
       - complyagent_internal
       - default
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Networks
 # ------------------------------------------------------------------------------
+# Internal network: Used for private inter-agent communication (no internet)
+# Default network: Provides outbound access for model downloads or API calls.
+# ==============================================================================
 
 networks:
   complyagent_internal:
@@ -99,9 +158,11 @@ networks:
   default:
     driver: bridge  # Internet access
 
-# ------------------------------------------------------------------------------  
+# ==============================================================================
 # Volumes
 # ------------------------------------------------------------------------------
+# Persistent model cache for Ollama — ensures models are not re-downloaded.
+# ==============================================================================
 
 volumes:
   ollama_models:
